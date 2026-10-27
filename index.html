@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>取得 LINE User ID</title>
+    <!-- 引入 LINE LIFF SDK -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        .info { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 20px; word-break: break-all; }
+    </style>
+</head>
+<body>
+
+    <h2>LIFF 測試網頁</h2>
+    <div id="status">正在初始化 LIFF...</div>
+
+    <div id="profile-box" style="display: none;" class="info">
+        <p><strong>您的顯示名稱：</strong> <span id="displayName"></span></p>
+        <p><strong>您的 User ID：</strong> <span id="userId"></span></p>
+    </div>
+
+    <script>
+        // 填入您在第一步取得的 LIFF ID
+        const MY_LIFF_ID = '2012240066-9jS9O1c7'; 
+
+        async function initializeLiff() {
+            try {
+                // 初始化 LIFF
+                await liff.init({ liffId: MY_LIFF_ID });
+                
+                // 檢查用戶是否已登入
+                if (!liff.isLoggedIn()) {
+                    document.getElementById('status').innerText = '正在引導登入...';
+                    liff.login(); // 如果沒登入，強制跳轉 LINE 登入畫面
+                } else {
+                    document.getElementById('status').innerText = '成功讀取資料！';
+                    
+                    // 取得用戶個人檔案
+                    const profile = await liff.getProfile();
+                    
+                    // 將資料顯示在網頁上
+                    document.getElementById('profile-box').style.display = 'block';
+                    document.getElementById('displayName').innerText = profile.displayName;
+                    document.getElementById('userId').innerText = profile.userId; // 這就是你要的 UID
+                }
+            } catch (error) {
+                document.getElementById('status').innerText = 'LIFF 初始化失敗: ' + error;
+                console.error(error);
+            }
+        }
+
+        // 網頁載入後執行
+        window.onload = function() {
+            initializeLiff();
+        };
+    </script>
+</body>
+</html>
